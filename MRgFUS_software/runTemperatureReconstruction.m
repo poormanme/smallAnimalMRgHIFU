@@ -17,6 +17,8 @@ function handle = runTemperatureReconstruction(handle)
 % tmax = 15; % deg C, for display
 % tmin = -5; 
 
+handle = setupFGEN(handle);
+
 %zeropad fmask
 ifmask = fftshift(ifft2(fftshift(handle.fmask)));
 fsize = size(handle.fmask);
@@ -151,12 +153,14 @@ meanCEM = [];
                     xlabel 'Block Index',ylabel '\Delta ^{\circ} C'
                     handle.Therm.tmap = tmap;
                     %% Do CEM calc if chosen
-                    if handle.calcCEM == 1
-                        cem(:,:,end+1) = calculateDosage(handle,t(length(meantemp)));
-                        CEM= cumsum(cem,3);
-%                         keyboard
-                        handle.Therm.meanCEM = squeeze(mean(mean(CEM.*repmat(handle.fmask,[1 1 size(CEM,3)]),1),2));
-                    end             
+                    if exist('handle.calcCEM')
+                        if handle.calcCEM == 1
+                            cem(:,:,end+1) = calculateDosage(handle,t(length(meantemp)));
+                            CEM= cumsum(cem,3);
+    %                         keyboard
+                            handle.Therm.meanCEM = squeeze(mean(mean(CEM.*repmat(handle.fmask,[1 1 size(CEM,3)]),1),2));
+                        end    
+                    end
                     
                     % update the control
                     focustemp = handle.Therm.tmap.*handle.fmask;
@@ -172,13 +176,13 @@ meanCEM = [];
                     end
                         
                     %foobar = foobar(foobar >= 0);
-%                     [handle.HIFU.voltage,handle.HIFU.ppi] = pidupdate(handle.HIFU.voltage,mean2(focustemp),handle.HIFU.ppi);
-%                     if handle.HIFU.voltage > handle.maxV
-%                         handle.HIFU.voltage = handle.maxV;
-%                     end
+                    [handle.HIFU.voltage,handle.HIFU.ppi] = pidupdate(handle.HIFU.voltage,mean2(focustemp),handle.HIFU.ppi);
+                    if handle.HIFU.voltage > handle.maxV
+                        handle.HIFU.voltage = handle.maxV;
+                    end
                     
                     %% send resulting command to function generator
-%                     handle = switchFGEN(handle);
+                    handle = onFGEN(handle);
                     
                 end
                 % Draw time elapsed since initial scan 

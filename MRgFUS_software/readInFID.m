@@ -1,4 +1,4 @@
-function [img,t] = readInFID(filepath,TR);
+function [img,t] = readInFID(filepath)
 %% Reads in FID file iteratively
 % Created by M. Poorman, W. Grissom - Fall 2014
 % Institute of Imaging Science, Vanderbilt University, Nashville, TN
@@ -24,8 +24,8 @@ if fp ~= -1
     %% Read overall header
     nblocks   = fread(fp,1,'int32');
     ntraces   = fread(fp,1,'int32');
-    dt = ntraces*TR; % seconds, time step of images
-    t = 0:dt:(nblocks-1)*dt;
+%     dt = ntraces*TR; % seconds, time step of images
+%     t = 0:dt:(nblocks-1)*dt;
     np        = fread(fp,1,'int32');
     ebytes    = fread(fp,1,'int32');
     tbytes    = fread(fp,1,'int32');

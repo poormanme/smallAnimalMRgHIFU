@@ -25,7 +25,8 @@ function outputs = runMRHIFU(basepath)
 % Use a T1 or T2 weighted anatomical image taken before dynamic scans
 % started
 % NOTE: MUST BE SINGLE SLICE, SQUARE FOV (as of 20140924)
-img = readInFID(basepath);
+TR = 0.015
+img = readInFID(basepath,TR);
 save('baseim.mat','img');
 sz=size(img);
 if sz(1) ~= sz(2);
@@ -59,11 +60,11 @@ while waitRun.run ==1
             handle = runTemperatureReconstruction(handle);
         end
         handle = offFGEN(handle);
-%     catch
-%         pause
-%         handle = offFGEN(handle);
-%         disp('Error in execution...function generator output terminated.');
-%     end
+    catch
+        pause
+        handle = offFGEN(handle);
+        disp('Error in execution...function generator output terminated.');
+    end
 %     pause
     outputs = handle.Therm;
     waitRun.run = 0;
