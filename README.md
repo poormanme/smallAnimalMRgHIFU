@@ -4,6 +4,7 @@ smallAnimalMRgHIFU
 Set of MATLAB and Solidworks files for implementing a small-animal MRgHIFU system on a small-animal MRI scanner
 
 --Created by ME Poorman, VL Chaplin, K Wilkens, WA Grissom, and CF Caskey at the Vanderbilt University Institue for Imaging Science
+
 --Open for use according to the license file with citation
 
 MRgFUS_software:
@@ -32,4 +33,4 @@ MRgHIFU_hardware_pt#:
 
 --contains solidworks files for HIFU bed
 
---known issue: paths are absolute not relative (fix upcoming)
+--FIXED known issue: paths are absolute not relative and missing magnet parts
