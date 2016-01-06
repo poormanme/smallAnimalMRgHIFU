@@ -1,6 +1,6 @@
 function varargout = runExpGui(varargin)
 %% GUI to pause execution after inputs are given, prompting to start scans
-% Created by M. Poorman, W. Grissom - Fall 2014
+% Created by M. Poorman - Fall 2014
 % Institute of Imaging Science, Vanderbilt University, Nashville, TN
 % Department of Biomedical Engineering, Vanderbilt University
 %

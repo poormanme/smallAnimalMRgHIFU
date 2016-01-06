@@ -19,7 +19,9 @@ function varargout = userinterface(varargin)
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
-
+% Created by M. Poorman, December 2015
+% Institute of Imaging Science, Vanderbilt University, Nashville, TN
+% Department of Biomedical Engineering, Vanderbilt University
 % Edit the above text to modify the response to help userinterface
 
 % Last Modified by GUIDE v2.5 06-Jan-2016 12:09:19

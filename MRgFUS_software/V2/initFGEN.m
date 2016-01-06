@@ -1,4 +1,8 @@
 function fncngen = initFGEN(fus)
+% Created by M. Poorman, Fall 2015
+% Institute of Imaging Science, Vanderbilt University, Nashville, TN
+% Department of Biomedical Engineering, Vanderbilt University
+
 
 % Create TCP/IP object 'fncngen'. Specify server machine and port number. 
 fncngen = tcpip(fus.ipaddress, 5025,'NetworkRole','Client'); 

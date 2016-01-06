@@ -1,4 +1,7 @@
 function [CEM] = calcCEM_vect(meantemp,dt,T0)
+% Created by M. Poorman Fall 2015
+% Institute of Imaging Science, Vanderbilt University, Nashville, TN
+% Department of Biomedical Engineering, Vanderbilt University
 
 % calculate CEM dosage given 
 % meantemp - vector of average temperatures (delta degrees C)

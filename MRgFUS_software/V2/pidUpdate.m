@@ -1,5 +1,7 @@
 function [c,p] = pidUpdate(c,meas,p)
-
+% Created by M. Poorman, W. Grissom Fall 2015
+% Institute of Imaging Science, Vanderbilt University, Nashville, TN
+% Department of Biomedical Engineering, Vanderbilt University
 % function updates control variable c, based on current state meas and 
 % parameters p
 

@@ -1,7 +1,7 @@
 close all; clear all; clc;
 %% runControlSoftware provies a real-time, closed-loop feedback method to 
 %% perform controlled MRgFUS of small animals.
-% Created by M. Poorman, W. Grissom - Fall 2014
+% Created by M. Poorman, December 2015
 % Institute of Imaging Science, Vanderbilt University, Nashville, TN
 % Department of Biomedical Engineering, Vanderbilt University
 

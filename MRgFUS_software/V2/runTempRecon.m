@@ -1,3 +1,7 @@
+% Created by M. Poorman, W. Grissom - December 2015
+% Institute of Imaging Science, Vanderbilt University, Nashville, TN
+% Department of Biomedical Engineering, Vanderbilt University
+
 function output = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode)
 gamma = algo.gamma;%42.58; %MHz/T
 alpha = algo.alpha;%0.01; %ppm/deg C
