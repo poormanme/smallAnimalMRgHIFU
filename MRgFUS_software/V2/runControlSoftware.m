@@ -7,13 +7,13 @@ close all; clear all; clc;
 
 % The script execution can be controlled via gui or direct script.  Toggle
 % the gui variable below to use the gui execution or not
-useGUI = 1;
+useGUI = 0;
 
 % You can also run the script execution in recon mode to re-watch a 
 % sonication without inducing heat or sending signals to the FUS system.  
 % Set the variable below to 1 to run a post-processing. Set to 0 to conduct
 % real-time sonication
-reconMode = 1;
+reconMode = 0;
 
 % If you would like to save the data please use the below toggle and define
 % a folder location
@@ -41,7 +41,7 @@ if ~useGUI
     fus.Vmin = 5e-3; %V
     fus.ncycles = 500;
     fus.frequency = 1.1; %MHz
-    fus.ipaddress = '111.11.111.111';
+    fus.ipaddress = '10.200.32.57';
 
     %---CEM values
     CEM.T0 = 37; %deg C
@@ -49,14 +49,15 @@ if ~useGUI
     CEM.thresh = 20; %CEM43
     
     %---algorithm settings
-%     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
-    algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20151213_01/gems_hifu_05.fid/fid';
+    %algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
+    algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
+    %algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20151213_01/gems_hifu_05.fid/fid';
     algo.focusROI = zeros(512);
     algo.focusROI(255:275,255:275) = true;
     [r,c] = find(algo.focusROI > 0);
     algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.quitwithCEM = 0;
-    algo.driftcorr = 0;
+    algo.driftcorr = 1;
     algo.driftroi = zeros(512);
     algo.driftroi(380:420,345:385) = true;
     [r,c] = find(algo.driftroi > 0);
@@ -118,35 +119,32 @@ catch
 	return;
 end
 
+%---Initialize function generator
+if ~reconMode
+    tic;
+    fus.fncngen = initFGEN(fus);
+    execution.fgen = toc;
+end
+
 %---wait for run command
 waitRun = runExpGui;
 proceed = waitRun.run;
 %% Run the sonication experiment 
 
 while proceed
-    %---read in image params
     
-    %---Initialize function generator
-    if ~reconMode
-        fus.fncngen = initFGEN(fus);
-    end
-
-%     try    
+    try
         keepgoing = 1;
         
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
-        keyboard
-        if ~reconMode
-            offFGEN(fus.fncngen);
-        end
-%     catch
-%         if ~reconMode
-%             offFGEN(fus.fncngen);
-%         end
-%         warning('Error in execution...function generator output terminated.');
-%         return;
-%     end
-    
+
+     catch
+         if ~reconMode
+             offFGEN(fus.fncngen);
+         end
+         warning('Error in execution...function generator output terminated.');
+         return;
+     end
     
     %---Stop sonication
     disp('stopping sonication...');
@@ -156,6 +154,7 @@ while proceed
     proceed = 0;
     disp('Done');
 end
+outputs.execution.fgen = execution.fgen;
 
 %% Save data
 if saveData

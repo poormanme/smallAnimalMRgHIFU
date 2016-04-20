@@ -42,7 +42,9 @@ while keepgoing
 
         fclose(fp);
 
-        %---now loop until we have read all the data
+        %---now loop until we have read all the data\
+        
+        %-preallocate
         nblocksread = 0;
         output.meantemp = [];
         output.img = zeros(512,512,length(t));
@@ -54,8 +56,9 @@ while keepgoing
         while nblocksread<nblocks 
             %---check that time has changed or reached end
             if (abs(filepropstmp.datenum-fileprops.datenum) > 0) || (etime(curtime,datevec(filepropstmp.date))>10)%|| (prevblock ~= nblocksread) % don't open unless file has changed
-                
+                aa= tic;
                 fp = fopen(algo.dynfilepath,'r','ieee-be');
+                opentime(nblocksread+1) = toc(aa);
                 fseek(fp,fpos,'bof');
                 % read block header, check if index ~= 0
                 scale     = fread(fp,1,'int16');
@@ -93,16 +96,18 @@ while keepgoing
                     foobar(256-ntraces/2+1:256+ntraces/2,256-ntraces/2+1:256+ntraces/2) = RE + 1i*IM;
 %                     keyboard
                     output.img(:,:,nblocksread+1) = fftshift(fft2(fftshift(foobar)));
-
+                    readintime(nblocksread+1) = toc(aa);
                     figure(1);
+                    tic;
                     subplot(321);imagesc(abs(output.img(:,:,nblocksread+1)));colorbar;axis image
                     set(gca, 'XTick', [], 'YTick', [])
                     title(['Block Index: ' num2str(nblocksread)]);
-                    
+                    plotimg1time(nblocksread+1) = toc;
                     %---if not baseline
                     if nblocksread > 0
                         foobar = abs(output.img(:,:,1));
                         mask = foobar > 0.08*max(foobar(:));
+                        tic;
                         tmap = angle(output.img(:,:,nblocksread+1).*conj(output.img(:,:,1)));
 %                         figure;im(tmap)
 %                         keyboard
@@ -117,8 +122,10 @@ while keepgoing
                         %---convert to deg C
                         tmap = tmap/(gamma*imgp.B0/10000*alpha*imgp.te*2*pi); % Celsius
                         output.delTmaps(:,:,nblocksread+1) = tmap;
+                        calcTmaptime(nblocksread+1) = toc;
 %                         keyboard
                         %---visualize current dynamic temperature map
+                        tic
                         subplot(322);hold on;
                         imagesc(tmap,[-1 ppi.nom+2]);colorbar;title 'degrees C';axis image;
                         rectangle('Position',algo.focusvect,'LineWidth',2,'EdgeColor','k');
@@ -126,12 +133,14 @@ while keepgoing
                             rectangle('Position',algo.driftvect,'LineWidth',2,'EdgeColor','k');
                         end
                         set(gca, 'XTick', [], 'YTick', [])
+                        plotimg2time(nblocksread+1) = toc;
 %                         keyboard
                         foo = tmap.*algo.focusROI;
                         output.meantemp(end+1) = mean2(foo(foo>0));
 %                         output.meantemp(end+1) = mean(tmap(algo.focusROI));
 
                         %---plot temperature evolution
+                        tic;
                         axis image
                         sp312 = subplot(312);hold on
                         plot(t(1:length(output.meantemp)),output.meantemp);axis([0 eps+t(length(output.meantemp)) -5 ppi.nom+2]);
@@ -139,16 +148,18 @@ while keepgoing
                         xlabel 'Time (s) ',ylabel '\delta ^{\circ} C'
                         title(['Block Index: ' num2str(nblocksread) '. Time: ' num2str(t(nblocksread+1)/60) ' minutes.']);
                         hold off;
-
+                        plotimg3time(nblocksread+1) = toc;
                         %---update the PIDcontrol
 %                         foobar = tmap(algo.focusROI);
 %                         foobar = foobar(foobar >= 0);
 %                         keyboard
-                        [voltage,ppi] = piupdateMegan(voltage,output.meantemp(end),ppi);
+                        tic;
+                        [voltage,ppi] = pidUpdate(voltage,output.meantemp(end),ppi);
                         if voltage > fus.Vmax
                             voltage = fus.Vmax;
                         end
-
+                        pidtime(nblocksread+1) = toc;
+                        
                         %---if data exists do CEM Calucaltion 
                         dt = t(end)-t(end-1);
                         CEMact = calcCEM_vect(output.meantemp,dt,CEM.T0);
@@ -181,36 +192,55 @@ while keepgoing
                         voltVals(end+1) = voltage*1000;
                         
                         %---display voltage curve
+                        tic
                         subplot(313);hold on;
                         plot(t(1:length(voltVals)),voltVals); grid on;xlabel('Time (s)');
                         plot(t(1:length(voltVals)),fus.Vmax*1000*ones(length(voltVals),1),'--r');grid on
                         hold off;%title(['CEM = ',num2str(output.meanCEM(end))]);
                         ylabel('Driving voltage (mV)'); 
                         axis([0 eps+t(length(voltVals)) fus.Vmin*1000 fus.Vmax*1000+5])
-
-
+                        plotimg4time(nblocksread+1) = toc;
+                        
                         %---send resulting PID command to function generator
                         disp(['Changing voltage to: ' num2str(voltage)]);
+                        
                         if ~reconMode
                             if voltage == 0
                                 fprintf(fus.fncngen,'OUTP1 OFF;');
                             else
+                                tic;
                                 fprintf(fus.fncngen,'OUTP1 ON;');
                                 cur_cmd = sprintf('SOUR1:VOLT %1.5f;',voltage);
                                 fprintf(fus.fncngen,cur_cmd);
+                                sendfgencommand(nblocksread+1) = toc;
+                                
                             end
                         end
+                        
+                        
                     end
                     drawnow
                     fpos = ftell(fp);
                     nblocksread = nblocksread + 1;
+                    
                 end
                 fclose(fp);
             end
+            
         end
         keepgoing = 0; % we should be all done now
     end
     output.t = t;
     output.voltVals = voltVals;
+    execution.sendfgencommand = mean(sendfgencommand(2:end));
+    execution.pid = mean(pidtime(2:end));
+    execution.calcTmap = mean(calcTmaptime(2:end));
+    execution.plottime.img1 = mean(plotimg1time);
+    execution.plottime.img2 = mean(plotimg2time(2:end));
+    execution.plottime.meantemp = mean(plotimg3time(2:end));
+    execution.plottime.voltage = mean(plotimg4time(2:end));
+    execution.readindata = mean(readintime);
+    execution.openfile = mean(opentime);
+    output.execution = execution;
 end
 
