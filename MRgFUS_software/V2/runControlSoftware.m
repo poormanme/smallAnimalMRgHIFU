@@ -7,13 +7,13 @@ close all; clear all; clc;
 
 % The script execution can be controlled via gui or direct script.  Toggle
 % the gui variable below to use the gui execution or not
-useGUI = 0;
+useGUI = 1;
 
 % You can also run the script execution in recon mode to re-watch a 
 % sonication without inducing heat or sending signals to the FUS system.  
 % Set the variable below to 1 to run a post-processing. Set to 0 to conduct
 % real-time sonication
-reconMode = 0;
+reconMode = 1;
 
 % If you would like to save the data please use the below toggle and define
 % a folder location
@@ -29,7 +29,7 @@ if ~useGUI
     %%%%% USER SETUP PARAMETERS HERE IF NOT USING GUI 
     
     %---PID
-    ppi.nom = 4; %deg C
+    ppi.nom = 6; %deg C
     ppi.pgain = 0.001;
     ppi.igain = 0.00001;
     ppi.dgain = 0.005;
@@ -39,31 +39,31 @@ if ~useGUI
     %---FUS
     fus.Vmax = 70e-3; %V
     fus.Vmin = 5e-3; %V
-    fus.ncycles = 500;
     fus.frequency = 1.1; %MHz
     fus.ipaddress = '10.200.32.57';
 
     %---CEM values
-    CEM.T0 = 37; %deg C
-    algo.quitwithCEM = 0;
+    CEM.T0 = 37.3; %deg C
+    algo.quitwithCEM = 1;
     CEM.thresh = 20; %CEM43
     
     %---algorithm settings
-    %algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
-    algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-    %algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20151213_01/gems_hifu_05.fid/fid';
+    algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
+    %algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
+    %algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150616_02/gems_hifu_06.fid/fid';
     algo.focusROI = zeros(512);
-    algo.focusROI(255:275,255:275) = true;
+    algo.focusROI(255:270,262:289) = true;
     [r,c] = find(algo.focusROI > 0);
     algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.quitwithCEM = 0;
-    algo.driftcorr = 1;
+    algo.driftcorr = 0;
     algo.driftroi = zeros(512);
-    algo.driftroi(380:420,345:385) = true;
+    algo.driftroi(190:230,100:140) = true;
     [r,c] = find(algo.driftroi > 0);
     algo.driftvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.gamma = 42.58; %MHz/T
     algo.alpha = 0.01; %ppm/deg C
+%     keyboard
 else
     
     %---call UI
@@ -133,18 +133,18 @@ proceed = waitRun.run;
 
 while proceed
     
-    try
+%     try
         keepgoing = 1;
         
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
 
-     catch
+%      catch
          if ~reconMode
              offFGEN(fus.fncngen);
          end
          warning('Error in execution...function generator output terminated.');
          return;
-     end
+%      end
     
     %---Stop sonication
     disp('stopping sonication...');
@@ -160,3 +160,12 @@ outputs.execution.fgen = execution.fgen;
 if saveData
     save(saveloc);
 end
+return
+
+%%
+figure;subplot(311);plot(meantemp);title('PyNGL 58 - Focal Temperature');
+xlabel('img #');ylabel('\Delta \circ C');
+hold on;plot(1:length(meantemp),6*ones(1,length(meantemp)),'r');
+subplot(312);plot(voltVals); title('Output Voltage');
+xlabel('img #');ylabel('mV');
+subplot(313);plot(CEMact_tot);

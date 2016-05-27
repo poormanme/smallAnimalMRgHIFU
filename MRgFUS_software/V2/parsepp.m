@@ -20,6 +20,7 @@ function procpar = parsepp(pathname)
 
 
 fullname = [pathname, '/procpar'];
+% keyboard
 % fullname=pathname;
 fid = fopen(fullname,'r');
 if fid == -1
