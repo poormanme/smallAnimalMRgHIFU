@@ -7,7 +7,7 @@ close all; clear all; clc;
 
 % The script execution can be controlled via gui or direct script.  Toggle
 % the gui variable below to use the gui execution or not
-useGUI = 1;
+useGUI = 0;
 
 % You can also run the script execution in recon mode to re-watch a 
 % sonication without inducing heat or sending signals to the FUS system.  
@@ -49,8 +49,8 @@ if ~useGUI
     
     %---algorithm settings
     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
-    %algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-    %algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150616_02/gems_hifu_06.fid/fid';
+%     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
+%     algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150616_02/gems_hifu_06.fid/fid';
     algo.focusROI = zeros(512);
     algo.focusROI(255:270,262:289) = true;
     [r,c] = find(algo.focusROI > 0);
@@ -128,7 +128,7 @@ end
 
 %---wait for run command
 waitRun = runExpGui;
-proceed = waitRun.run;
+proceed = waitRun.UserData;
 %% Run the sonication experiment 
 
 while proceed
