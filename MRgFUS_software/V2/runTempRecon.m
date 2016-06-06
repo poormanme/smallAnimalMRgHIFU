@@ -53,6 +53,21 @@ while keepgoing
         filepropstmp = dir(algo.dynfilepath);
         curtime = clock;
         
+        if strcmp(algo.driftcorr,'lookuptable')
+%             error('CHANGE THESE CALIBRATION FILES FOR YOUR SPECIFIC SCANNER GRADIENT SET, comment out error when done');
+%             keyboard;
+            if imgp.tr(1) == 0.03 && imgp.nt == 1
+                load('~/buffyhome/Documents/MATLAB/Thermometry/fieldDriftCorr_TR30_Avg1_Mat128.mat');
+                driftcorr = regTR30Avg1(1)*(t/60)+regTR30Avg1(2);
+            elseif imgp.tr(1) == 0.015 && imgp.nt == 2
+                load('~/buffyhome/Documents/MATLAB/Thermometry/fieldDriftCorr_TR15_Avg2_Mat128.mat');
+                driftcorr = regTR15Avg2(1)*(t/60)+regTR15Avg2(2);
+            else
+                error('No look up table exists for this TR,Avgs, and scanner');
+                return;
+            end
+        end        
+        
         while nblocksread<nblocks 
             %---check that time has changed or reached end
             if (abs(filepropstmp.datenum-fileprops.datenum) > 0) || (etime(curtime,datevec(filepropstmp.date))>10)%|| (prevblock ~= nblocksread) % don't open unless file has changed
@@ -112,11 +127,16 @@ while keepgoing
 %                         figure;im(tmap)
 %                         keyboard
                         %---do drift correction
-                        if algo.driftcorr == 1
+                        if strcmp(algo.driftcorr,'roi')
                             phase = algo.driftroi.*(tmap(:,:));%,nblocksread+1)));
                             output.avgDriftPhase(nblocksread+1) = mean2(phase(phase~=0));
                             tmap = tmap-output.avgDriftPhase(nblocksread+1);
-
+                        elseif strcmp(algo.driftcorr,'lookuptable')
+                            tmap = tmap-driftcorr(nblocksread+1);
+                        elseif strcmp(algo.driftcorr,'none');
+                            warning('No drift correction applied per user specification');
+                        else
+                            error('Invalid drift correction selection made');
                         end
                         
                         %---convert to deg C
@@ -129,7 +149,7 @@ while keepgoing
                         subplot(322);hold on;
                         imagesc(tmap,[-1 ppi.nom+2]);colorbar;title 'degrees C';axis image;
                         rectangle('Position',algo.focusvect,'LineWidth',2,'EdgeColor','k');
-                        if algo.driftcorr
+                        if strcmp(algo.driftcorr,'roi')
                             rectangle('Position',algo.driftvect,'LineWidth',2,'EdgeColor','k');
                         end
                         set(gca, 'XTick', [], 'YTick', [])
@@ -212,7 +232,7 @@ while keepgoing
                                 fprintf(fus.fncngen,'OUTP1 ON;');
                                 cur_cmd = sprintf('SOUR1:VOLT %1.5f;',voltage);
                                 fprintf(fus.fncngen,cur_cmd);
-                                sendfgencommand(nblocksread+1) = toc;
+%                                 sendfgencommand(nblocksread+1) = toc;
                                 
                             end
                         end
@@ -232,7 +252,7 @@ while keepgoing
     end
     output.t = t;
     output.voltVals = voltVals;
-    execution.sendfgencommand = mean(sendfgencommand(2:end));
+    %execution.sendfgencommand = mean(sendfgencommand(2:end));
     execution.pid = mean(pidtime(2:end));
     execution.calcTmap = mean(calcTmaptime(2:end));
     execution.plottime.img1 = mean(plotimg1time);

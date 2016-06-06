@@ -50,15 +50,15 @@ if ~useGUI
     %---algorithm settings
     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
 %     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-    algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150930_03/gems_hifu_02.fid/fid';
+%     algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150930_03/gems_hifu_02.fid/fid';
     algo.focusROI = zeros(512);
     algo.focusROI(238:262,335:358) = true;
     [r,c] = find(algo.focusROI > 0);
     algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.quitwithCEM = 0;
-    algo.driftcorr = 0;
+    algo.driftcorr = 'none'; % 'none' = no correction; 'roi' = roi based; 'lookuptable' = lookup table based <-requires calibration file for your scanner/gradient set
     algo.driftroi = zeros(512);
-    algo.driftroi(190:230,100:140) = true;
+    algo.driftroi(190:230,100:140) = true; %define if want ROI
     [r,c] = find(algo.driftroi > 0);
     algo.driftvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.gamma = 42.58; %MHz/T
@@ -133,18 +133,18 @@ proceed = waitRun.UserData; %matlab version fix by R Weires
 
 while proceed
     
-%     try
+    try
         keepgoing = 1;
         
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
 
-%      catch
+     catch
          if ~reconMode
              offFGEN(fus.fncngen);
          end
          warning('Error in execution...function generator output terminated.');
          return;
-%      end
+     end
     
     %---Stop sonication
     disp('stopping sonication...');
