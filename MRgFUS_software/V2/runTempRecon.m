@@ -54,7 +54,7 @@ while keepgoing
         curtime = clock;
         
         if strcmp(algo.driftcorr,'lookuptable')
-%             error('CHANGE THESE CALIBRATION FILES FOR YOUR SPECIFIC SCANNER GRADIENT SET, comment out error when done');
+            error('CHANGE THESE CALIBRATION FILES FOR YOUR SPECIFIC SCANNER GRADIENT SET, comment out error when done');
 %             keyboard;
             if imgp.tr(1) == 0.03 && imgp.nt == 1
                 load('~/buffyhome/Documents/MATLAB/Thermometry/fieldDriftCorr_TR30_Avg1_Mat128.mat');
