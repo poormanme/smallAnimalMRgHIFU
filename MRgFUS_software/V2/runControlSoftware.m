@@ -50,9 +50,9 @@ if ~useGUI
     %---algorithm settings
     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
 %     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-%     algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150616_02/gems_hifu_06.fid/fid';
+    algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150930_03/gems_hifu_02.fid/fid';
     algo.focusROI = zeros(512);
-    algo.focusROI(255:270,262:289) = true;
+    algo.focusROI(238:262,335:358) = true;
     [r,c] = find(algo.focusROI > 0);
     algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.quitwithCEM = 0;
@@ -128,7 +128,7 @@ end
 
 %---wait for run command
 waitRun = runExpGui;
-proceed = waitRun.UserData;
+proceed = waitRun.UserData; %matlab version fix by R Weires
 %% Run the sonication experiment 
 
 while proceed

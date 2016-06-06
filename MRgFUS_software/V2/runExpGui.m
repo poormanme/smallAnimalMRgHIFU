@@ -84,7 +84,7 @@ function runExp_Callback(hObject, eventdata, handles)
 % hObject    handle to runExp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.output.UserData = 1;
+handles.output.UserData = 1; %matlab version fix by R Weires
 uiresume(handles.figure1);
 guidata(hObject,handles);
 % 
