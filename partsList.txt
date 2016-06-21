@@ -1,0 +1,22 @@
+smallAnimalMRgHIFU Parts List:
+This document details the various components used to construct this system
+
+Platform:
+- Parts from solid works files in .zip folders(table tops, axis movements, supports, housing, etc)
+- Purchased small components (see excel file in .zip for more details and links)
+   - Brass Pinion Wire Stock (A 1B 9-Y641014)
+   - Aluminum Rack with side mounting holes (S1811Y-RC-4A)
+   - Hubless brass gear (A 1B 1-Y64014)
+   - Worm Gear (A 1T 6-Y483006)
+   - Stainless Steel Worm (S1D93Z-P048SD)
+
+Hardware:
+- Amplifier (E&I A150, 150 W, 55 dB, Electronics & Innovation, Ltd., Rochester, NY, USA)
+- Waveform Generator (Agilent 33511B, Agilent, Santa Clara, CA, USA)
+- Transducer (Sonic Concepts H101MR, Ellipsoidal FWHM, 400W, Sonic Concepts, Bothell, WA, USA)
+
+Software:
+- MATLAB
+- Ethernet Cable
+
+   
