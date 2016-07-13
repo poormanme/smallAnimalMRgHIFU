@@ -23,10 +23,7 @@ Usage notes:
     --On the Varian systems, the current acquisition file can be found in '~/vnmrsys/exp2/acqfil/fid'
     --Previously stored runs and data are found in'~/vnmrsys/data/studies/s_YYYYMMDD_##'
     --The file "sloppyRunMRHIFU.m" is a non-modular version of the V1 code that does not have a GUI.  This file is intended to help with debugging of the GUI and parameters must be manually changed within the code.
-ARFI:
-    --V2/ARFI/gems_meg.c is the pulse sequence written for varian and modified to include a motion encoding gradient for ARFI
-    --The c code will need to be compiled on the scanner prior to execution
-    --V2/ARFI/visualizeARFI takes all of the files for ARFI images and computes the eddy-current corrected displacements
+
 Modules:
 
     --initFGEN: initialize function generator and connect via ethernet for remote control
@@ -34,6 +31,11 @@ Modules:
     --runTempRecon: run temperature reconstruction routine, continuously poll MR file for updates and process data into temperature evolution
     --pidUpdate: compute the next voltage step via PID feedback control
     --calcCEM_vect: compute the current thermal dose in CEM43
+ARFI:
+
+    --V2/ARFI/gems_meg.c is the pulse sequence written for varian and modified to include a motion encoding gradient for ARFI
+    --The c code will need to be compiled on the scanner prior to execution
+    --V2/ARFI/visualizeARFI takes all of the files for ARFI images and computes the eddy-current corrected displacements   
     
 MRgHIFU_hardware_pt#: 
 
