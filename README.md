@@ -17,6 +17,7 @@ To run the program:
 
     --V1: open the "runMRHIFU.m" file and use this function call.
     --V2: run the "runControlSoftware.m" directly. Be sure to specify GUI usage, recon options, and data saving
+    --GUI: The gui automatically loads with "default" suggested values for thermal targets and PID gain parameters. These can be freely modified by the user.
 
 Usage notes:
 
