@@ -24,7 +24,7 @@ Freely available for use and modification with citation of original distribution
  * __runExpGui.m/.fig:__ button to begin sonication
  * __runTempRecon.m:__ computes thermometry, calls other modules for execution
  * __userinterface.m/fig:__ optional GUI to set up sonication parameters
- * 
+
 ###MRgHIFU_hardware_pt#:
 * Solidworks files and parts list of all hardware components used to build the system
 * Split into 4 ".zip" files to comply with size requirements. Unzip into same folder for proper use.
