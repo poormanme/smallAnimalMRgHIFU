@@ -1,44 +1,41 @@
-smallAnimalMRgHIFU
-==================
-DOI: 10.5281/zenodo.51633
+#smallAnimalMRgHIFU
+***
+## Open-source plans for constructing and implementing a preclinical MRgHIFU/MRgFUS system on a small-animal MRI scanner.
+### DOI: 10.5281/zenodo.51633
 
-Set of MATLAB and Solidworks files for implementing a small-animal MRgHIFU system on a small-animal MRI scanner
+#### ME Poorman, VL Chaplin, K Wilkens, MD Dockery, T Giorgio, WA Grissom, and CF Caskey
+#### Vanderbilt University Institue for Imaging Science
 
-    --Created by ME Poorman, VL Chaplin, K Wilkens, MD Dockery, T Giorgio, WA Grissom, and CF Caskey at the Vanderbilt University Institue for Imaging Science
-    --Open for use according to the license file with citation
+Freely available for use and modification with citation of original distribution/article (in review). See license file for more information.
+***
 
-MRgFUS_software:
+### MRgFUS_software:
+* Matlab code to control sonication real-time with baseline subtraction thermometry and a PID feedback controller
+* __V1:__ Single script version - intended for debugging purposes only
+* __V2:__ Modular software and GUI commented and tested - intended for use and straightforward modification
+ * __ARFI folder:__ pulse sequence and recon code. C code must be compiled prior to use
+ * __calcCEM_vect.m:__ computes thermal dose given focal temperature
+ * __initFGEN.m:__ initializes waveform generator
+ * __offFGEN.m:__ stops all waveform outputs to transducer
+ * __parsepp.m:__ reads parameter file 
+ * __pidUpdate.m:__ PID controller computation
+ * __readInFID.m:__ reads in next image from .fid data file
+ * __runControlSoftware.m:__ master script, contains GUI to set up execution, begins sonication
+ * __runExpGui.m/.fig:__ button to begin sonication
+ * __runTempRecon.m:__ computes thermometry, calls other modules for execution
+ * __userinterface.m/fig:__ optional GUI to set up sonication parameters
+ * 
+###MRgHIFU_hardware_pt#:
+* Solidworks files and parts list of all hardware components used to build the system
+* Split into 4 ".zip" files to comply with size requirements. Unzip into same folder for proper use.
 
-    --Contains matlab code for GUI interface and real-time temperature reconstruction and control software
-    --V1: Older version of code
-    --V2: Jan 2016 updates: include drift correction, streamlined ROI, quit with CEM threshold
+### Instructions for use:
+* See instructions file
 
-To run the program:
+### License
+* See license file
 
-    --V1: open the "runMRHIFU.m" file and use this function call.
-    --V2: run the "runControlSoftware.m" directly. Be sure to specify GUI usage, recon options, and data saving
-    --GUI: The gui automatically loads with "default" suggested values for thermal targets and PID gain parameters. These can be freely modified by the user.
-
-Usage notes:
-
-    --On the Varian systems, the current acquisition file can be found in '~/vnmrsys/exp2/acqfil/fid'
-    --Previously stored runs and data are found in'~/vnmrsys/data/studies/s_YYYYMMDD_##'
-    --The file "sloppyRunMRHIFU.m" is a non-modular version of the V1 code that does not have a GUI.  This file is intended to help with debugging of the GUI and parameters must be manually changed within the code.
-
-Modules:
-
-    --initFGEN: initialize function generator and connect via ethernet for remote control
-    --offFGEN: turn off function generator output and return control to local
-    --runTempRecon: run temperature reconstruction routine, continuously poll MR file for updates and process data into temperature evolution
-    --pidUpdate: compute the next voltage step via PID feedback control
-    --calcCEM_vect: compute the current thermal dose in CEM43
-ARFI:
-
-    --V2/ARFI/gems_meg.c is the pulse sequence written for varian and modified to include a motion encoding gradient for ARFI
-    --The c code will need to be compiled on the scanner prior to execution
-    --V2/ARFI/visualizeARFI takes all of the files for ARFI images and computes the eddy-current corrected displacements   
-    
-MRgHIFU_hardware_pt#: 
-
-    --contains solidworks files for HIFU bed
-    --FIXED known issue: paths are absolute not relative and missing magnet parts
+### Helpful tips:
+* On the Varian systems, the current acquisition file can be found in '~/vnmrsys/exp2/acqfil/fid'
+* Previously stored Varian data is found in'~/vnmrsys/data/studies/s_YYYYMMDD_##' 
+ * Can run software in recon mode to see past execution 
