@@ -6,7 +6,7 @@
 #### ME Poorman, VL Chaplin, K Wilkens, MD Dockery, T Giorgio, WA Grissom, and CF Caskey
 #### Vanderbilt University Institue for Imaging Science
 
-Freely available for use and modification with citation of original distribution/article (in review). See license file for more information.
+Freely available for use and modification with citation of original distribution/article (https://jtultrasound.biomedcentral.com/articles/10.1186/s40349-016-0066-7). See license file for more information.
 ***
 
 ### MRgFUS_software:
