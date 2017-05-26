@@ -7,7 +7,7 @@ close all; clear all; clc;
 
 % The script execution can be controlled via gui or direct script.  Toggle
 % the gui variable below to use the gui execution or not
-useGUI = 1;
+useGUI = 0;
 
 % You can also run the script execution in recon mode to re-watch a 
 % sonication without inducing heat or sending signals to the FUS system.  
@@ -51,7 +51,10 @@ if ~useGUI
 %     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
 %     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
     algo.dynfilepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/s_20170524_02/gems_29.fid/fid';
-    algo.dispSlice = 1;
+    algo.dispSlice = 1; 
+    if algo.dispSlice <= 0
+        warning('Invalid Display Slice (set to 0 or below)...make sure to set appropriately if it is a multislice scan');
+    end
     algo.focusROI = zeros(512);
     algo.focusROI(238:262,335:358) = true;
     [r,c] = find(algo.focusROI > 0);
@@ -63,7 +66,7 @@ if ~useGUI
     [r,c] = find(algo.driftroi > 0);
     algo.driftvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.gamma = 42.58; %MHz/T
-    algo.alpha = 0.01; %ppm/deg C
+    algo.alpha = 0.01; %ppm/deg C;
 %     keyboard
 else
     
@@ -98,7 +101,7 @@ else
 
     %-algorithm settings
     if isfield(guiParams,'sliceChoice')
-        algo.dispSlice = guiParams.sliceChoice;
+        algo.dispSlice = guiParams.sliceChoiceVal;
     end
     algo.dispSlice = guiParams.sliceChoice;
     algo.dynfilepath = guiParams.dynPath;
@@ -139,18 +142,20 @@ proceed = waitRun.UserData; %matlab version fix by R Weires
 
 while proceed
     
-    try
+%     try
         keepgoing = 1;
         
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
 
-     catch
+%      catch
          if ~reconMode
              offFGEN(fus.fncngen);
          end
+         
          warning('Error in execution...function generator output terminated.');
+         
          return;
-     end
+%      end
     
     %---Stop sonication
     disp('stopping sonication...');

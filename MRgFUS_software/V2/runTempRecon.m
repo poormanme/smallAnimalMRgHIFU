@@ -108,7 +108,9 @@ while keepgoing
                     %---select slice to use for real time feedback control
                         if imgp.ns>1
                             try
-                                dispSlice = algo.dispSlice;
+                                if algo.dispSlice > 0
+                                    dispSlice = algo.dispSlice;
+                                end
                             catch
                                 warning('Multislice data detected, select which slice you want to use for real time ROI control using algo.dispSlice');
                                 return;
@@ -128,7 +130,8 @@ while keepgoing
                     readintime(nblocksread+1) = toc(aa);
                     figure(1);
                     tic;
-                    subplot(321);imagesc(abs(output.img(:,:,dispSlice,nblocksread+1)));colorbar;axis image
+%                     keyboard
+                    subplot(321);imagesc(abs(squeeze(output.img(:,:,dispSlice,nblocksread+1))));colorbar;axis image
                     set(gca, 'XTick', [], 'YTick', [])
                     title(['Block Index: ' num2str(nblocksread)]);
                     plotimg1time(nblocksread+1) = toc;
