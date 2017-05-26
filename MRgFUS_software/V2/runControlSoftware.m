@@ -7,7 +7,7 @@ close all; clear all; clc;
 
 % The script execution can be controlled via gui or direct script.  Toggle
 % the gui variable below to use the gui execution or not
-useGUI = 0;
+useGUI = 1;
 
 % You can also run the script execution in recon mode to re-watch a 
 % sonication without inducing heat or sending signals to the FUS system.  
@@ -72,45 +72,48 @@ else
     
     %---restructure variables
     %-PID
-    ppi.nom = handle.targetRise;
-    ppi.pgain = handle.pgain;
-    ppi.igain = handle.igain;
-    ppi.dgain = handle.dgain;
+    ppi.nom = guiParams.targetRise;
+    ppi.pgain = guiParams.pgain;
+    ppi.igain = guiParams.igain;
+    ppi.dgain = guiParams.dgain;
     ppi.cmin = 0;
     ppi.cmax = 0.1;
 
 
     %-FUS
-    fus.Vmax = handle.vmax;
-    fus.Vmin = handle.vmin;
-    fus.frequency = handle.frequency;
-    fus.ncycles = handle.ncycles;
-    fus.ipaddress = handle.ipaddress;
+    fus.Vmax = guiParams.vmax;
+    fus.Vmin = guiParams.vmin;
+    fus.frequency = guiParams.frequency;
+    fus.ncycles = guiParams.ncycles;
+    fus.ipaddress = guiParams.ipaddress;
 
     %-CEM values
-    CEM.T0 = handle.startingTemp;
-    if ~isfield(handle,'threshCEM')
+    CEM.T0 = guiParams.startingTemp;
+    if ~isfield(guiParams,'threshCEM')
         algo.quitwithCEM = 0;
     else
         algo.quitwithCEM = 1;
-        CEM.thresh = handle.threshCEM;
+        CEM.thresh = guiParams.threshCEM;
     end
 
     %-algorithm settings
-    algo.dispSlice = 1;
-    algo.dynfilepath = handle.dynPath;
-    algo.focusROI = handle.focusROI;
-    algo.focusvect = handle.focusvect;
-    if ~isfield(handle,'driftroi');
+    if isfield(guiParams,'sliceChoice')
+        algo.dispSlice = guiParams.sliceChoice;
+    end
+    algo.dispSlice = guiParams.sliceChoice;
+    algo.dynfilepath = guiParams.dynPath;
+    algo.focusROI = guiParams.focusROI;
+    algo.focusvect = guiParams.focusvect;
+    if ~isfield(guiParams,'driftroi');
         algo.driftcorr = 0;
     else
         algo.driftcorr = 1;
-        algo.driftroi = handle.driftroi;
-        algo.driftvect = handle.driftvect;
+        algo.driftroi = guiParams.driftroi;
+        algo.driftvect = guiParams.driftvect;
     end
     algo.gamma = 42.58; %MHz/T
     algo.alpha = 0.01; %ppm/deg C
-    
+    return
 end
 %---load image params
 
@@ -129,9 +132,9 @@ if ~reconMode
 end
 
 %---wait for run command
-% waitRun = runExpGui;
-% proceed = waitRun.UserData; %matlab version fix by R Weires
-proceed = 1;
+waitRun = runExpGui;
+proceed = waitRun.UserData; %matlab version fix by R Weires
+
 %% Run the sonication experiment 
 
 while proceed

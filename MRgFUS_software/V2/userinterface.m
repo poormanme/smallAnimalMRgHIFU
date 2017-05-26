@@ -24,7 +24,7 @@ function varargout = userinterface(varargin)
 % Department of Biomedical Engineering, Vanderbilt University
 % Edit the above text to modify the response to help userinterface
 
-% Last Modified by GUIDE v2.5 06-Jan-2016 12:09:19
+% Last Modified by GUIDE v2.5 26-May-2017 11:30:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,6 +64,9 @@ set(handles.selectdriftROI,'Visible','off');
 set(handles.threshCEM,'Visible','off'); 
 set(handles.textthreshCEM,'Visible','off'); 
 set(handles.text19,'Visible','off'); 
+set(handles.sliceChoiceVal,'Visible','off'); 
+set(handles.sliceText,'Visible','off'); 
+
 % UIWAIT makes userinterface wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
@@ -109,6 +112,8 @@ function browseAnat_Callback(hObject, eventdata, handles)
 [fname, dir] = uigetfile('','Load anatomical .fid file');
 set(handles.filepathtext,'String',[dir fname]);
 handles.anatPath = [dir fname];
+guiParams.anatPath = [dir fname];
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 
@@ -158,9 +163,12 @@ if get(hObject,'Value');
     xlabel('Draw Focus ROI - press enter when done','Color','r');
     f = imrect();
     pause
-    handles.output.focusROI = createMask(f,handles.anatImg);
-    [r,c] = find(handles.output.focusROI > 0);
-    handles.output.focusvect = [r(1)-1 c(1)-1 r(end)-r(1)+2 c(end)-c(1)+2];
+    handles.focusROI = createMask(f,handles.anatImg);
+    guiParams.focusROI = handles.focusROI;
+    [r,c] = find(focusROI > 0);
+    handles.focusvect = [r(1)-1 c(1)-1 r(end)-r(1)+2 c(end)-c(1)+2];
+    guiParams.focusvect = handles.focusvect;
+    assignin('base','guiParams',guiParams);
     guidata(hObject,handles);
     xlabel('');
     uiwait(handles.figure1);
@@ -179,9 +187,12 @@ if get(hObject,'Value');
     xlabel('Draw Drift ROI - press enter when done','Color','red');
     f = imrect();
     pause
-    handles.output.driftROI = createMask(f,handles.anatImg);
-    [r,c] = find(handles.output.driftROI>0);
-    handles.output.driftvect = [r(1)-1 c(1)-1 r(end)-r(1)+2 c(end)-c(1)+2];
+    handles.driftROI = createMask(f,handles.anatImg);
+    guiParams.driftROI = handles.driftROI;
+    [r,c] = find(driftROI>0);
+    handles.driftvect = [r(1)-1 c(1)-1 r(end)-r(1)+2 c(end)-c(1)+2];
+    guiParams.driftvect = handles.driftvect;
+    assignin('base','guiParams',guiParams);
     guidata(hObject,handles);
     xlabel('');
     uiwait(handles.figure1);
@@ -211,7 +222,9 @@ function threshCEM_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of threshCEM as text
 %        str2double(get(hObject,'String')) returns contents of threshCEM as a double
-handles.output.threshCEM = get(hObject,'Value');
+handles.threshCEM = str2double(get(hObject,'String'));
+guiParams.threshCEM = handles.threshCEM;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -247,8 +260,9 @@ function targetRiseval_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of targetRiseval as text
 %        str2double(get(hObject,'String')) returns contents of targetRiseval as a double
-a = get(hObject,'String');
-handles.output.targetRise = a;
+handles.targetRise = str2double(get(hObject,'String'));
+guiParams.targetRise = handles.targetRise;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -272,7 +286,9 @@ function startingTemperature_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of startingTemperature as text
 %        str2double(get(hObject,'String')) returns contents of startingTemperature as a double
-handles.output.startingTemp = get(hObject,'Value');
+handles.startingTemp = str2double(get(hObject,'String'));
+guiParams.startingTemp = handles.startingTemp;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -296,7 +312,9 @@ function vmax_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of vmax as text
 %        str2double(get(hObject,'String')) returns contents of vmax as a double
-handles.output.vmax = get(hObject,'Value')/1000; %mV
+handles.vmax = str2double(get(hObject,'String'))/1000; %mV
+guiParams.vmax = handles.vmax;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -320,7 +338,9 @@ function vmin_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of vmin as text
 %        str2double(get(hObject,'String')) returns contents of vmin as a double
-handles.output.vmin = get(hObject,'Value')/1000; %mV
+handles.vmin = str2double(get(hObject,'String'))/1000; %mV
+guiParams.vmin = handles.vmin;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -344,7 +364,9 @@ function frequency_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of frequency as text
 %        str2double(get(hObject,'String')) returns contents of frequency as a double
-handles.output.frequency = get(hObject,'Value');
+handles.frequency = str2double(get(hObject,'String'));
+guiParams.frequency = handles.frequency;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -368,7 +390,9 @@ function ncycles_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of ncycles as text
 %        str2double(get(hObject,'String')) returns contents of ncycles as a double
-handles.output.nycles = get(hObject,'Value');
+handles.nycles = str2double(get(hObject,'String'));
+guiParams.ncycles = handles.ncycles;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -391,7 +415,9 @@ function browseDyn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [fname, dir] = uigetfile('','point to dynamic fid file');
 set(handles.filepathtext_dyn,'String',[dir fname]);
-handles.output.dynPath = [dir fname];
+handles.dynPath = [dir fname];
+guiParams.dynPath = handles.dynPath;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 
@@ -425,7 +451,9 @@ function pgain_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of pgain as text
 %        str2double(get(hObject,'String')) returns contents of pgain as a double
-handles.output.pgain = get(hObject,'Value');
+handles.pgain = str2double(get(hObject,'String'));
+guiParams.pgain = handles.pgain;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -449,7 +477,9 @@ function igain_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of igain as text
 %        str2double(get(hObject,'String')) returns contents of igain as a double
-handles.output.igain = get(hObject,'Value');
+guiParams.igain = str2double(get(hObject,'String'));
+handles.igain = guiParams.igain;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -473,7 +503,9 @@ function dgain_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of dgain as text
 %        str2double(get(hObject,'String')) returns contents of dgain as a double
-handles.output.dgain = get(hObject,'Value');
+handles.dgain = str2double(get(hObject,'String'));
+guiParams.dgain = handles.dgain;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -502,42 +534,46 @@ function run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargout = handles.output;
-if ~isfield(handles.output,'pgain')
-    handles.output.pgain = str2num(get(handles.pgain,'String'));
+if ~isfield(handles,'pgain')
+    guiParams.output.pgain = str2double(get(handles.pgain,'String'));
 end
-if ~isfield(handles.output,'igain')
-    handles.output.igain = str2num(get(handles.igain,'String'));
+if ~isfield(handles,'igain')
+    guiParams.igain = str2double(get(handles.igain,'String'));
 end
-if ~isfield(handles.output,'dgain')
-    handles.output.dgain = str2num(get(handles.dgain,'String'));
+if ~isfield(handles,'dgain')
+    guiParams.dgain = str2double(get(handles.dgain,'String'));
 end
-if ~isfield(handles.output,'targetRise')
-    handles.output.targetRise= str2num(get(handles.targetRiseval,'String'));
+if ~isfield(handles,'targetRise')
+    guiParams.targetRise= str2double(get(handles.targetRiseval,'String'));
 end
-if ~isfield(handles.output,'startingTemp')
-    handles.output.startingTemp= str2num(get(handles.startingTemperature,'String'));
+if ~isfield(handles,'startingTemp')
+    guiParams.startingTemp= str2double(get(handles.startingTemperature,'String'));
 end
-if ~isfield(handles.output,'vmax')
-    handles.output.vmax= str2num(get(handles.vmax,'String'))/1000; %mV
+if ~isfield(handles,'vmax')
+    guiParams.vmax= str2double(get(handles.vmax,'String'))/1000; %mV
 end
-if ~isfield(handles.output,'vmin')
-    handles.output.vmin= str2num(get(handles.vmin,'String'))/1000; %mV
+if ~isfield(handles,'vmin')
+    guiParams.vmin= str2double(get(handles.vmin,'String'))/1000; %mV
 end
-if ~isfield(handles.output,'frequency')
-    handles.output.frequency= str2num(get(handles.frequency,'String'));
+if ~isfield(handles,'frequency')
+    guiParams.frequency= str2double(get(handles.frequency,'String'));
 end
-if ~isfield(handles.output,'ncycles')
-    handles.output.ncycles= str2num(get(handles.ncycles,'String'));
+if ~isfield(handles,'ncycles')
+    guiParams.ncycles= str2double(get(handles.ncycles,'String'));
 end
-if ~isfield(handles.output,'ipaddress')
-    handles.output.ipaddress= str2num(get(handles.ipaddress,'String'));
+if ~isfield(handles,'ipaddress')
+    guiParams.ipaddress= str2double(get(handles.ipaddress,'String'));
 end
-if ~isfield(handles.output,'filepathtext_dyn')
-    handles.output.filepathtext_dyn= str2num(get(handles.filepathtext_dyn,'String'));
+if ~isfield(handles,'filepathtext_dyn')
+    guiParams.filepathtext_dyn= str2double(get(handles.filepathtext_dyn,'String'));
 end
-if (handles.quitCEMselect) && (~isfield(handles.output,'threshCEM'))
-    handles.output.threshCEM= str2num(get(handles.threshCEM,'String'));
+if (~isfield(handles,'threshCEM'))
+    guiParams.threshCEM= str2double(get(handles.threshCEM,'String'));
 end
+if (~isfield(handles,'sliceChoiceVal'))
+    guiParams.sliceChoiceVal= str2double(get(handles.sliceChoiceVal,'String'));
+end
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 uiresume(handles.figure1);
 
@@ -549,7 +585,9 @@ function ipaddress_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of ipaddress as text
 %        str2double(get(hObject,'String')) returns contents of ipaddress as a double
-handles.output.ipaddress = get(hObject,'Value');
+handles.ipaddress = get(hObject,'String');
+guiParams.ipaddress = handles.ipaddress;
+assignin('base','guiParams',guiParams);
 guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -562,4 +600,46 @@ function ipaddress_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+
+function sliceChoiceVal_Callback(hObject, eventdata, handles)
+% hObject    handle to sliceChoiceVal (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of sliceChoiceVal as text
+%        str2double(get(hObject,'String')) returns contents of sliceChoiceVal as a double
+handles.sliceChoiceVal = str2double(get(hObject,'String'));
+guiParams.sliceChoiceVal = handles.sliceChoiceVal;
+assignin('base','guiParams',guiParams);
+guidata(hObject,handles);
+
+% --- Executes during object creation, after setting all properties.
+function sliceChoiceVal_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to sliceChoiceVal (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in chooseMultiSlice.
+function chooseMultiSlice_Callback(hObject, eventdata, handles)
+% hObject    handle to chooseMultiSlice (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of chooseMultiSlice
+if get(hObject,'Value')
+    set(handles.sliceText,'Visible','on');   
+    set(handles.sliceChoiceVal,'Visible','on'); 
+else
+    set(handles.sliceText,'Visible','off');
+    set(handles.sliceChoiceVal,'Visible','off'); 
 end
