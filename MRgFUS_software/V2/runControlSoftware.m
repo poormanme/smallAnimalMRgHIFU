@@ -166,9 +166,12 @@ while proceed
     disp('Done');
 end
 
+%% format output better
+
 %% Save data
 if saveData
     save(saveloc);
+    convert2PrettyOutput(saveloc)
 end
 return
 
