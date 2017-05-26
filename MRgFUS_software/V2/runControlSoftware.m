@@ -50,7 +50,7 @@ if ~useGUI
     %---algorithm settings
 %     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
 %     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-    algo.dynfilepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/s_20170524_02/gems_29.fid/fid';
+    algo.dynfilepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/s_20170524_02/gems_27.fid/fid';
     algo.dispSlice = 1; 
     if algo.dispSlice <= 0
         warning('Invalid Display Slice (set to 0 or below)...make sure to set appropriately if it is a multislice scan');
@@ -142,12 +142,12 @@ proceed = waitRun.UserData; %matlab version fix by R Weires
 
 while proceed
     
-%     try
+    try
         keepgoing = 1;
         
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
 
-%      catch
+     catch
          if ~reconMode
              offFGEN(fus.fncngen);
          end
@@ -155,7 +155,7 @@ while proceed
          warning('Error in execution...function generator output terminated.');
          
          return;
-%      end
+     end
     
     %---Stop sonication
     disp('stopping sonication...');
