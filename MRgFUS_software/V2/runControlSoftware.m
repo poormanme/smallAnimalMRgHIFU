@@ -48,9 +48,10 @@ if ~useGUI
     CEM.thresh = 20; %CEM43
     
     %---algorithm settings
-    algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
+%     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
 %     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-%     algo.dynfilepath = '~/buffyhome/Documents/Data/Thermom/horiz47t/s_20150930_03/gems_hifu_02.fid/fid';
+    algo.dynfilepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/s_20170524_02/gems_29.fid/fid';
+    algo.dispSlice = 1;
     algo.focusROI = zeros(512);
     algo.focusROI(238:262,335:358) = true;
     [r,c] = find(algo.focusROI > 0);
@@ -96,6 +97,7 @@ else
     end
 
     %-algorithm settings
+    algo.dispSlice = 1;
     algo.dynfilepath = handle.dynPath;
     algo.focusROI = handle.focusROI;
     algo.focusvect = handle.focusvect;
@@ -127,8 +129,9 @@ if ~reconMode
 end
 
 %---wait for run command
-waitRun = runExpGui;
-proceed = waitRun.UserData; %matlab version fix by R Weires
+% waitRun = runExpGui;
+% proceed = waitRun.UserData; %matlab version fix by R Weires
+proceed = 1;
 %% Run the sonication experiment 
 
 while proceed
@@ -154,7 +157,6 @@ while proceed
     proceed = 0;
     disp('Done');
 end
-outputs.execution.fgen = execution.fgen;
 
 %% Save data
 if saveData
