@@ -13,15 +13,28 @@ useGUI = 0;
 % sonication without inducing heat or sending signals to the FUS system.  
 % Set the variable below to 1 to run a post-processing. Set to 0 to conduct
 % real-time sonication
-reconMode = 1;
+reconMode = 0;
+
+% Define the file paths for your data. Examples as follows
+%----for online (non recon) mode
+if ~reconMode
+    basepath = '~/vnmrsys/'; 
+    datename = 'exp2/'; %date folder for data
+    scanname = 'acqfil/'; %specific scan name for data'
+else
+%----for recon mode
+    basepath = '~/vnmrsys/studies/data/'; %example: '~/Documents/Data/HIFU/';
+    datename = 's_20170524_02/'; %date folder for data
+    scanname = 'gems_31.fid'; %specific scan name for data'
+end
 
 % If you would like to save the data please use the below toggle and define
 % a folder location
 saveData = 0;
-saveloc = ['~/myfilepath/',num2str(clock),'.mat'];
+saveloc = [basepath datename 'reconstructed/' scanname(1:end-4) '.mat'];
 
 % The script is modular and can be adapted for other scanner systems
-% The default values are in place, directly polling the varianc acq file
+% The default values are in place, directly polling the varian acq file
 
 %% Setup the execution
 if ~useGUI 
@@ -48,9 +61,7 @@ if ~useGUI
     CEM.thresh = 20; %CEM43
     
     %---algorithm settings
-%     algo.dynfilepath = '~/vnmrsys/exp2/acqfil/fid';
-%     algo.dynfilepath = '~/vnmrsys/data/studies/s_20160417_03/gems_hifu_01.fid/fid';
-    algo.dynfilepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/s_20170524_02/gems_27.fid/fid';
+    algo.dynfilepath = [basepath datename scanname '/fid']; %% Comment for online mode (not recon mode)
     algo.dispSlice = 1; 
     if algo.dispSlice <= 0
         warning('Invalid Display Slice (set to 0 or below)...make sure to set appropriately if it is a multislice scan');
