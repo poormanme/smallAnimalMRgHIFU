@@ -23,7 +23,7 @@ if ~reconMode
     scanname = 'acqfil/'; %specific scan name for data'
 else
 %----for recon mode
-    basepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/';%'~/vnmrsys/studies/data/'; %example: '~/Documents/Data/HIFU/';
+    basepath = '~/vnmrsys/studies/data/'; %example: '~/Documents/Data/HIFU/';
     datename = 's_20171206_01/'; %date folder for data
     scanname = 'gems_07.fid'; %specific scan name for data'
 end
