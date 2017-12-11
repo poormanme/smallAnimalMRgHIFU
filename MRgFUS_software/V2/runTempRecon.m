@@ -47,8 +47,13 @@ while keepgoing
         %-preallocate
         nblocksread = 0;
         output.meantemp = [];
-        output.img = zeros(512,512,imgp.ns,length(t));
-        output.delTmaps = zeros(512,512,imgp.ns,length(t));
+        if algo.zeropad
+            output.img = zeros(512,512,imgp.ns,length(t));
+            output.delTmaps = zeros(512,512,imgp.ns,length(t));
+        else
+            output.img = zeros(np/2,ntraces/imgp.ns,imgp.ns,length(t));
+            output.delTmaps = zeros(np/2,ntraces/imgp.ns,imgp.ns,length(t));
+        end
         voltVals = [];
         filepropstmp = dir(algo.dynfilepath);
         curtime = clock;
@@ -124,9 +129,13 @@ while keepgoing
                                           
                     %---ft and display data (zeropad)
 %                     keyboard
-                    foobar = zeros(512,512,ns);
-                    foobar(256-ntraces/ns/2+1:256+ntraces/ns/2,256-ntraces/ns/2+1:256+ntraces/ns/2,:) = RE + 1i*IM;
-                    output.img(:,:,:,nblocksread+1) = fftshift(fft2(fftshift(foobar)));
+                    if algo.zeropad
+                        foobar = zeros(512,512,ns);
+                        foobar(256-ntraces/ns/2+1:256+ntraces/ns/2,256-ntraces/ns/2+1:256+ntraces/ns/2,:) = RE + 1i*IM;
+                        output.img(:,:,:,nblocksread+1) = fftshift(fft2(fftshift(foobar)));
+                    else
+                        output.img(:,:,:,nblocksread+1) = fftshift(fft2(fftshift(RE+1i*IM)));
+                    end
                     readintime(nblocksread+1) = toc(aa);
                     figure(1);
                     tic;
@@ -173,7 +182,7 @@ while keepgoing
                             end
                             set(gca, 'XTick', [], 'YTick', [])
                             plotimg2time(nblocksread+1) = toc;
-    %                         keyboard
+%                             keyboard
                             foo = tmap(:,:,dispSlice).*algo.focusROI;
                             output.meantemp(end+1) = mean2(foo(foo>0));
     %                         output.meantemp(end+1) = mean(tmap(algo.focusROI));

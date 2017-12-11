@@ -13,7 +13,7 @@ useGUI = 0;
 % sonication without inducing heat or sending signals to the FUS system.  
 % Set the variable below to 1 to run a post-processing. Set to 0 to conduct
 % real-time sonication
-reconMode = 0;
+reconMode = 1;
 
 % Define the file paths for your data. Examples as follows
 %----for online (non recon) mode
@@ -23,10 +23,13 @@ if ~reconMode
     scanname = 'acqfil/'; %specific scan name for data'
 else
 %----for recon mode
-    basepath = '~/vnmrsys/studies/data/'; %example: '~/Documents/Data/HIFU/';
-    datename = 's_20170524_02/'; %date folder for data
-    scanname = 'gems_31.fid'; %specific scan name for data'
+    basepath = '/buffyexport/home/poormame/Documents/Data/laserFiber/';%'~/vnmrsys/studies/data/'; %example: '~/Documents/Data/HIFU/';
+    datename = 's_20171206_01/'; %date folder for data
+    scanname = 'gems_07.fid'; %specific scan name for data'
 end
+
+% Set dynamic data file path
+dynfilepath = [basepath datename scanname '/fid'];
 
 % If you would like to save the data please use the below toggle and define
 % a folder location
@@ -37,6 +40,18 @@ saveloc = [basepath datename 'reconstructed/' scanname(1:end-4) '.mat'];
 % The default values are in place, directly polling the varian acq file
 
 %% Setup the execution
+
+%---load image params
+
+try
+    imgp = parsepp(dynfilepath(1:end-4));
+catch
+    warning('Error in reading image parameter file...experiment aborted');
+	return;
+end
+
+%---setup AlgoParams
+
 if ~useGUI 
     
     %%%%% USER SETUP PARAMETERS HERE IF NOT USING GUI 
@@ -61,23 +76,36 @@ if ~useGUI
     CEM.thresh = 20; %CEM43
     
     %---algorithm settings
-    algo.dynfilepath = [basepath datename scanname '/fid']; %% Comment for online mode (not recon mode)
-    algo.dispSlice = 1; 
+    algo.dynfilepath = dynfilepath; %% Comment for online mode (not recon mode)
+    algo.dispSlice = 2; 
     if algo.dispSlice <= 0
         warning('Invalid Display Slice (set to 0 or below)...make sure to set appropriately if it is a multislice scan');
     end
-    algo.focusROI = zeros(512);
-    algo.focusROI(238:262,335:358) = true;
-    [r,c] = find(algo.focusROI > 0);
-    algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
     algo.quitwithCEM = 0;
     algo.driftcorr = 'none'; % 'none' = no correction; 'roi' = roi based; 'lookuptable' = lookup table based <-requires calibration file for your scanner/gradient set
-    algo.driftroi = zeros(512);
-    algo.driftroi(190:230,100:140) = true; %define if want ROI
-    [r,c] = find(algo.driftroi > 0);
-    algo.driftvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
+    algo.zeropad = 0; % 0 - turns off zero padding. not available in GUI
+    if algo.zeropad
+        algo.focusROI = zeros(512);
+        algo.focusROI(238:262,335:358) = true;
+        [r,c] = find(algo.focusROI > 0);
+        algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
+        algo.driftroi = zeros(512);
+        algo.driftroi(190:230,100:140) = true; %define if want ROI
+        [r,c] = find(algo.driftroi > 0);
+        algo.driftvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
+    else
+        algo.focusROI = zeros(imgp.nv,imgp.np/2); %uses true size
+        algo.focusROI(60:68,60:68) = true;
+        [r,c] = find(algo.focusROI > 0);
+        algo.focusvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
+        algo.driftroi = zeros(imgp.nv,imgp.np/2);
+        algo.driftroi(60:68,60:68) = true;
+        [r,c] = find(algo.driftroi > 0);
+        algo.driftvect = [c(1)-1 r(1)-1 c(end)-c(1)+2 r(end)-r(1)+2];
+    end
     algo.gamma = 42.58; %MHz/T
     algo.alpha = 0.01; %ppm/deg C;
+
 %     keyboard
 else
     
@@ -129,36 +157,32 @@ else
     algo.alpha = 0.01; %ppm/deg C
     return
 end
-%---load image params
 
-try
-    imgp = parsepp(algo.dynfilepath(1:end-4));
-catch
-    warning('Error in reading image parameter file...experiment aborted');
-	return;
-end
 
 %---Initialize function generator
 if ~reconMode
     tic;
     fus.fncngen = initFGEN(fus);
     execution.fgen = toc;
+    
+    %---wait for run command
+    waitRun = runExpGui;
+    proceed = waitRun.UserData; %matlab version fix by R Weires
+else
+    proceed = 1;
 end
 
-%---wait for run command
-waitRun = runExpGui;
-proceed = waitRun.UserData; %matlab version fix by R Weires
+
 
 %% Run the sonication experiment 
 
 while proceed
     
-    try
+%     try
         keepgoing = 1;
-        
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
 
-     catch
+%      catch
          if ~reconMode
              offFGEN(fus.fncngen);
          end
@@ -166,7 +190,7 @@ while proceed
          warning('Error in execution...function generator output terminated.');
          
          return;
-     end
+%      end
     
     %---Stop sonication
     disp('stopping sonication...');
