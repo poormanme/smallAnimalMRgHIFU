@@ -33,8 +33,8 @@ dynfilepath = [basepath datename scanname '/fid'];
 
 % If you would like to save the data please use the below toggle and define
 % a folder location
-saveData = 0;
-saveloc = [basepath datename 'reconstructed/' scanname(1:end-4) '.mat'];
+saveData = 1;
+saveloc = [basepath datename 'reconstructed/' scanname(1:end-4) '_notZeroPadded.mat'];
 
 % The script is modular and can be adapted for other scanner systems
 % The default values are in place, directly polling the varian acq file
@@ -178,11 +178,11 @@ end
 
 while proceed
     
-%     try
+    try
         keepgoing = 1;
         outputs = runTempRecon(fus,algo,imgp,ppi,CEM,keepgoing,reconMode);
 
-%      catch
+     catch
          if ~reconMode
              offFGEN(fus.fncngen);
          end
@@ -190,7 +190,7 @@ while proceed
          warning('Error in execution...function generator output terminated.');
          
          return;
-%      end
+     end
     
     %---Stop sonication
     disp('stopping sonication...');
